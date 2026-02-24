@@ -1,0 +1,30 @@
+# Credentials and secrets
+*.json.secret
+.env
+.env.local
+.env.*.local
+.env.secret
+secrets.json
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Node modules and build artifacts
+node_modules/
+dist/
+build/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Terraform state and cache (if any at root)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl

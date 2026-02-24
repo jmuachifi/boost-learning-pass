@@ -35,3 +35,19 @@ terraform.rc
 
 # Ignore lock file if using Terraform 0.14 or later
 .terraform.lock.hcl
+# Protect volumes with credentials and certificates
+volume/
+
+# Environment files and secrets
+.env
+.env.local
+.env.*.local
+.env.secret
+secrets.json
+*.pem
+*.key
+*.crt
+*.cert
+
+# Docker and deployment files
+docker-compose.override.yml
