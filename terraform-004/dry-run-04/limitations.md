@@ -1,0 +1,3 @@
+# Limitations
+
+This sandbox is configured to use LocalStack, a local AWS API emulator. This sandbox uses the free edition of LocalStack, which has limitations on which resources it will allow you to deploy. For more information on which resources are included in the free version, refer to the [AWS service feature coverage](https://docs.localstack.cloud/user-guide/aws/feature-coverage/) documentation.
