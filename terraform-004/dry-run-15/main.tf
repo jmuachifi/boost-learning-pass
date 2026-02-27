@@ -73,13 +73,34 @@ resource "aws_security_group" "sg_8080" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+resource "aws_security_group" "sg_22" {
+  name = "sg_22"
+  vpc_id = aws_vpc.vpc.id
 
+  ingress {
+    from_port = 22
+    to_port  = 22
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "tls_private_key" "ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "ssh_key" {
+  key_name = "ssh_key"
+  public_key = tls_private_key.ssh_key.public_key_openssh
+}
 
 resource "aws_instance" "web" {
-  ami                         = var.ami_id
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.subnet_public.id
-  vpc_security_group_ids      = [aws_security_group.sg_8080.id]
+  vpc_security_group_ids      = [aws_security_group.sg_22.id, aws_security_group.sg_8080.id]
   associate_public_ip_address = true
   user_data                   = templatefile("user_data.tftpl", { department = var.user_department, name = var.user_name })
+  ami                         = lookup(var.aws_amis, var.aws_region)
+  key_name                    = aws_key_pair.ssh_key.key_name
 }

@@ -35,3 +35,11 @@ variable "ami_id" {
   description = "The AMI ID to use for the instance (for LocalStack compatibility)"
   default     = "ami-12c6146b"
 }
+variable "aws_amis" {
+  type = map
+  default = {
+    "us-east-1" = "ami-12c6146b"
+    "us-west-2" = "ami-12c6146b"
+    "us-east-2" = "ami-12c6146b"
+  }
+}
