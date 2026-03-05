@@ -1,193 +1,108 @@
 # Terraform Learning Pass 004
 
-A comprehensive learning project exploring Terraform configurations, modules, state management, and AWS resource provisioning with LocalStack for local development and testing.
+Hands-on Terraform exercises using AWS resources on LocalStack.  
+Each `dry-run-*` folder is a standalone scenario you can run independently.
 
-## 📋 Overview
+## What You Learn
 
-This repository contains a progressive series of Terraform configurations (dry-runs) that demonstrate:
-- Basic Terraform setup and variables
-- Output configurations
-- Modular infrastructure design
-- AWS EC2 instance provisioning
-- State management and dependencies
-- LocalStack integration for local AWS simulation
+- Terraform basics: providers, variables, outputs, and state
+- Resource lifecycle: `plan`, `apply`, `destroy`
+- Module design and reuse
+- Local AWS simulation with LocalStack
+- Managing configuration through `terraform.tfvars`
 
-## 🗂️ Project Structure
+## Repository Layout
 
-```
+```text
 terraform-004/
-├── localstack-docker-compose.yml    # LocalStack Docker setup
-├── README.md                        # This file
-├── dry-run-00/ through dry-run-12/  # Progressive Terraform examples
-└── scripts/                         # Utility scripts
+├── localstack-docker-compose.yml
+├── README.md
+├── dry-run-00 ... dry-run-12/
+└── scripts/
 ```
 
-## 📚 Dry-Run Folders
+## Dry-Run Progression
 
-Each folder represents a learning milestone with increasing complexity:
+- `dry-run-00` to `dry-run-03`: foundational Terraform syntax and structure
+- `dry-run-04`: architecture notes and extended provisioning
+- `dry-run-05`: first reusable module (`modules/aws-ec2-instance`)
+- `dry-run-06`: variable overrides with `terraform.tfvars`
+- `dry-run-07` to `dry-run-10`: user data/scripts + module-driven builds
+- `dry-run-11` and `dry-run-12`: more advanced composition/state practice
 
-- **dry-run-00 to dry-run-03**: Foundational Terraform concepts (variables, outputs, basic configurations)
-- **dry-run-04**: Architecture documentation and resource provisioning
-- **dry-run-05**: Introduction to Terraform modules (aws-ec2-instance module)
-- **dry-run-06**: Configuration with terraform.tfvars for variable override
-- **dry-run-07**: EC2 instances with initialization scripts
-- **dry-run-08**: Sensitive variables and module usage (aws-instance module)
-- **dry-run-09**: Script-based user data for instance initialization
-- **dry-run-10**: Module-based infrastructure with outputs
-- **dry-run-11-12**: Advanced configurations and state management
+## Prerequisites
 
-## ⚙️ Prerequisites
+- Terraform 1.x
+- Docker Desktop (or Docker Engine) with Compose support
+- Optional: AWS CLI
 
-- **Terraform** (>= 1.0)
-- **Docker** and **Docker Compose**
-- **AWS CLI** (optional, for AWS configuration)
-- **LocalStack** (runs via Docker Compose)
+## Quick Start
 
-## 🚀 Quick Start
-
-### 1. Start LocalStack
-
-LocalStack provides a local AWS development environment for testing without incurring cloud costs.
+1) Start LocalStack from repository root:
 
 ```bash
-docker-compose -f localstack-docker-compose.yml up -d
+docker compose -f localstack-docker-compose.yml up -d
 ```
 
-Verify LocalStack is running:
-```bash
-docker-compose -f localstack-docker-compose.yml ps
-```
-
-### 2. Initialize Terraform
-
-Navigate to any dry-run folder and initialize:
+2) Pick a scenario and initialize Terraform:
 
 ```bash
 cd dry-run-12
 terraform init
 ```
 
-### 3. Plan Your Infrastructure
-
-Preview the resources to be created:
+3) Validate and preview changes:
 
 ```bash
+terraform validate
 terraform plan
 ```
 
-Or use a variables file:
-
-```bash
-terraform plan -var-file="terraform.tfvars"
-```
-
-### 4. Apply Configuration
-
-Deploy the infrastructure:
+4) Apply and inspect outputs:
 
 ```bash
 terraform apply
-```
-
-### 5. View Outputs
-
-Retrieve output values:
-
-```bash
 terraform output
 ```
 
-Specific output:
+5) Clean up when done:
+
 ```bash
-terraform output <output_name>
+terraform destroy
 ```
 
-## 📖 Common Terraform Commands
+## Common Commands
 
 ```bash
-# Initialize working directory
-terraform init
-
-# Format code
 terraform fmt -recursive
-
-# Validate configuration syntax
 terraform validate
-
-# Plan changes
 terraform plan
-
-# Apply changes
 terraform apply
-
-# Destroy resources
-terraform destroy
-
-# Show state
-terraform show
-
-# List resources in state
+terraform output
 terraform state list
-
-# Inspect specific resource
-terraform state show <resource_address>
-```
-
-## 🔑 LocalStack Configuration
-
-LocalStack overrides are specified in `localstack-overrinde.tf` files in relevant dry-run folders. These ensure Terraform provisions resources to LocalStack instead of actual AWS:
-
-```hcl
-provider "aws" {
-  region            = "us-east-1"
-  access_key        = "test"
-  secret_key        = "test"
-  skip_credentials_validation = true
-  skip_requesting_account_id  = true
-  
-  endpoints {
-    ec2 = "http://localhost:4566"
-    # Other service endpoints...
-  }
-}
-```
-
-## 📝 Tips & Best Practices
-
-- **Variables**: Use `.tfvars` files for sensitive data or environment-specific values
-- **Modules**: Organize reusable components in modules subdirectories
-- **State Files**: `.tfstate` files track resources; keep them secure and backed up
-- **Outputs**: Define outputs for frequently accessed resource attributes
-- **Documentation**: Each dry-run includes a `terraform.tf` with provider configuration
-
-## 🧹 Cleanup
-
-To remove all provisioned resources:
-
-```bash
-cd <dry-run-folder>
 terraform destroy
 ```
 
-To stop LocalStack:
+## Notes on LocalStack
 
-```bash
-docker-compose -f localstack-docker-compose.yml down
-```
+- Several folders include `localstack-overrinde.tf` (filename kept as-is in this repo).
+- Those files redirect AWS provider endpoints to LocalStack (`http://localhost:4566`).
+- Test credentials are typically used (`access_key = "test"`, `secret_key = "test"`).
 
-## 📌 Notes
+## Tips
 
-- Each dry-run is independent; you can work on multiple folders simultaneously
-- Some folders contain `.tfstate` and `.tfstate.backup` files—these are snapshots of infrastructure state
-- Sensitive data should use `terraform.tfvars` or environment variables, never hardcoding secrets
-- Use `terraform workspace` for managing multiple environments within the same configuration
+- Treat each `dry-run-*` directory as independent unless explicitly linked.
+- Keep secrets in `*.tfvars` files or environment variables, not hardcoded in `.tf` files.
+- Don’t share `.tfstate` files outside trusted environments.
 
-## 🔗 Resources
+## Troubleshooting
 
-- [Terraform Documentation](https://www.terraform.io/docs)
-- [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest)
-- [LocalStack Documentation](https://docs.localstack.cloud/)
+- LocalStack not reachable: verify `docker compose ps` and check port `4566`.
+- Provider/plugin issues: run `terraform init -upgrade`.
+- Unexpected state behavior: inspect with `terraform state list` and `terraform show`.
 
----
+## References
 
-Happy learning! 🎓
+- Terraform: https://developer.hashicorp.com/terraform/docs
+- AWS Provider: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+- LocalStack: https://docs.localstack.cloud/
